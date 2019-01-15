@@ -1,0 +1,6 @@
+bcc -c -ansi  t.c
+as86 -o bs.o bs.s
+ld86 -d bs.o t.o /usr/lib/bcc/libc.a
+dd if=a.out of=mtximage bs=1024 count=1 conv=notrunc
+rm *.o
+qemu-system-i386 -fda mtximage -no-fd-bootchk
