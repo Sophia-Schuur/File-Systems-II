@@ -1,4 +1,3 @@
-
 typedef unsigned char  u8;
 typedef unsigned short u16;
 typedef unsigned long  u32;
@@ -37,6 +36,35 @@ u16 getblk(u16 blk, char *buf)
 	readfd( blk/18, ((blk)%18)/9, ( ((blk)%18)%9)<<1, buf);
 }
 
+u16 find(u16 block, char *name)
+{
+	DIR *dirp;
+	char *c;
+	getblk(block, buf2);
+	dirp = (DIR *)buf2;
+	while((char *)dirp < &buf2[BLK]){
+		c = dirp->name[dirp->name_len];
+		dirp->name[dirp->name_len] = 0;
+		if (strcmp(dirp->name, name) == 0){
+			dirp->name[dirp->name_len] = c;
+			return dirp->inode;
+		}
+		dirp->name[dirp->name_len] = c;
+		dirp = (DIR *)((char *)dirp + dirp->rec_len);
+	}
+	return 0;
+}
+
+INODE *gino(u16 blk, u16 node)
+{
+	u16 bk, id;
+	bk = blk + ((node -1) / 8);
+	id = (node - 1) & 7;
+	getblk(bk, buf1);
+
+	return (INODE *)buf1 + id;
+}
+
 char *dev = "mtximage";
 char temp[256];
 main()
@@ -72,7 +100,7 @@ main()
   	dp = (DIR *)buf2;         // buf2 contains DIR entries
 
 
-  	myprints(" Contents of "); myprints(dev); myprints("\n\r");
+  	myprints(" Contents of"); myprints(dev); myprints("\n\r");
 
   	while((char *)dp < &buf2[BLK])
   	{
