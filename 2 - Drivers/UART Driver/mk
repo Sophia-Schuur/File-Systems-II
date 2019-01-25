@@ -1,16 +1,21 @@
 # 1. What does the following statement do?___________________________________
 arm-none-eabi-as -mcpu=arm926ej-s -g -w ts.s -o ts.o
+# assembles ts.s file into an object file.
 
 # 2. What does the following statement do?___________________________________
 arm-none-eabi-gcc -c -mcpu=arm926ej-s -w -g t.c -o t.o
+# compiles using gcc compiler
 
 # 3. What does the following statement do?___________________________________
 arm-none-eabi-ld -T t.ld ts.o t.o -o t.elf
+#links files
 
 # 4. What does the following statement do?___________________________________
 arm-none-eabi-objcopy -O binary t.elf t.bin
+# creates a binary
 
 rm *.o *.elf
+# remove all object files and files ending in .elf
 
 echo ready to go?
 read dummy
