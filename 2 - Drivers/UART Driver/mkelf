@@ -1,0 +1,6 @@
+arm-none-eabi-as -mcpu=arm926ej-s -g -w ts.s -o ts.o
+arm-none-eabi-gcc -c -mcpu=arm926ej-s -w -g t.c -o t.o
+arm-none-eabi-ld -T t.ld ts.o t.o -o t.elf
+arm-none-eabi-readelf -a t.elf
+
+#dissassemble t.elf : arm-none-eabi-objdump -d t.elf
