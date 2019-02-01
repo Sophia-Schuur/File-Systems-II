@@ -1,0 +1,92 @@
+CONTENTS of the MTX disk image:
+
+     |  B0  | B1 ...................................................... B1339 |
+     --------------------------------------------------------------------------
+     |booter|   An EXT2 file system for MTX; kernel=/boot/mtx                 | 
+     --------------------------------------------------------------------------
+   
+     LAB#1 IS FOR YOU TO WRITE A BOOTER PROGRAM TO REPLACE THE booter IN BLOCK#0
+     TO BOOT UP THE MTX KERNEL, which is the image file /boot/mtx.
+
+3-2. Background: Computer Architecture and Programming Environment
+     Lab#1 assumes the following hardware and software environments.
+
+     Hardware: Intel X86 based PC running Linux. For convenience, use a virtual
+               machine that emulates the PC hardware: QEMU, VMware, VirtualBox,
+               etc.
+     Software: BCC compiler-assembler-linker under Linux. 
+
+     When a PC starts, it is in the so-called 16-bit UNPROTECTED mode, also 
+     known as the 16-bit real mode. While in this mode, the PC's CPU can only 
+     execute 16-bit code and access 1MB memory. The diagram below shows the 1MB
+     memory layout, shown in 64KB segments.
+
+                      1MB MEMORY layout in 64KB SEGMENTS
+
+           0x0000    0x1000   .......     0x9000     0xA000 ... 0xF000
+           -----------------------------------------------------------
+           |         |     ..........     |          |          BIOS |
+           -----------------------------------------------------------
+           |<-------------- 640KB RAM area --------->|<--- ROM ----->|
+
+     The CPU's internal registers are
+              segment registers: CS, DS, SS, ES 
+              general registers: AX, BX, CX, DX, BP, SI, DI
+              status  register : FLAG
+              stack pointer    : SP
+              instruction point or program counter: IP
+     All registers are 16-bit wide. 
+  
+     The CPU operates as follows:
+
+1. In real-mode, the CPU has 20-bit address lines for 2**20 = 1MB memory, e.g.
+   20-bit addresses
+                    0x00000, 0x00010, 0x00020
+                    0x10000, 0x20000, 0x30000, etc.
+
+   A segment is a block of memory beginning from a 16-byte boundary. Since the 
+   last 4 bits of a segment address are always 0, it suffices to represent a
+   segment address by the leading 16 bits. Each segment size is up to 64KB.
+
+2. The CPU in has 4 segment registers, each 16-bits.
+
+       CS -> Code  segment  = program code or instructions
+       DS -> Data  segment  = static and global data (ONE COPY only)
+       SS -> Stack segment  = stack area for calling and local variables. 
+       ES -> Extra segment  = temp area; may be used for malloc()/mfree()
+
+3. In a program, every address is a 16-bit VIRTUAL address (VA). For each 16-bit
+   VA, the CPU automatically translates it into a 20-bit PHYSICAL address (PA)
+   by
+          (20-bit)PA = ((16-bit)segmentRegister << 4) + (16-bit)VA.
+   
+  where segmentRegister is either by default or by a segment prefix in the 
+  instruction.
+  Examples:
+  Assume CS=0x1234. IP=0x2345 ==> PA = (0x1234<<4) + 0x2345 = 0x14685 (20 bits)
+         DS=0x1000. mov ax,0x1234 ==> PA=0x10000 + 0x1234   = 0x11234, etc.
+
+IMPORTANT: In a program, every address is a 16-bit VA, which is an OFFSET in a
+           memory segment. When accessing memory, the CPU maps every VA to a 
+           20-bit PA.
+
+4. The number of DISTINCT segments available to the CPU depends on the
+   memory model of the executing program, which is determined by the compiler
+   and linker used to generate the binary executable image. The most often used
+   memory models are
+
+    One-segment model :(COM files): CS=DS=SS all in ONE segment <= 64KB
+    Separate I&D model:(EXE files): CS=CodeSegment, DS=SS=Data+Stack segment 
+  
+One-segment model programs can be loaded to, and executed from, any available 
+segment in memory. In order to run a One-segment memory model program, the 
+following steps are needed:
+
+(1). A C compiler and assembler which generate 16-bit (object) code
+(2). A linker that combines the object code to generate a ONE-segment
+     binary executable image. We shall use BCC under Linux to do (1) and (2).
+(3). LOAD the binary executable image into memory (at a segment boundary) 
+     and set CPU's CS=DS=SS = loaded segment.
+         Set SP at the HIGH end of the segment.
+         Set IP at the beginning instruction in the segment.
+     Then let the CPU execute the image.
