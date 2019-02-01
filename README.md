@@ -1,2 +1,2 @@
 # Operating-Systems
-Using QEMU to run a custom mtximage operating system.
+Using QEMU to run an MTX operating system.
