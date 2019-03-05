@@ -54,8 +54,11 @@ PROC *kfork(char *filename)
   }
   // ptable entry flag=|AP0|doma|1|CB10|=110|0001|1|1110|=0xC3E or 0xC32       
   //ptable[2048] = 0x800000 + (p->pid - 1)*0x100000|0xC3E;
+  /*
+      TJ
+  */
   ptable[2048] = 0x800000 + (p->pid - 1)*0x100000|0xC32;
-  
+
   p->cpsr = (int *)0x10;    // previous mode was Umode
   
   // set kstack to resume to goUmode, then to VA=0 in Umode image
@@ -85,7 +88,7 @@ PROC *kfork(char *filename)
 
   ***********************/
   // must load filename to Umode image area at 7MB+(pid-1)*1MB
-  addr = (char *)(0x700000 + (p->pid)*0x100000);
+  addr = (char *)(0x800000 + (p->pid - 1)*0x100000);
 
   load(filename, p);
   

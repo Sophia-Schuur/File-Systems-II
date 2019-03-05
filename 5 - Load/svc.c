@@ -67,7 +67,7 @@ int svc_handler(int a, int b, int c, int d)
      case 2: r = kps();              break;
      case 3: r = kchname((char *)b); break;
      case 4: r = ktswitch();         break;
-     case 5: r = wait(running, &status);             break;
+     case 5: r = wait(running, &status); break;
      case 6: r = ksleep(b);           break;
      case 7: r = kwakeup(b);          break;
      case 90: r = kgetc() & 0x7F;    break;
