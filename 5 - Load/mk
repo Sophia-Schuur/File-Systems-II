@@ -1,7 +1,7 @@
-(cd USER; mku u1; mku u2; mku u3; mku u4)
+(cd USER; ./mku u1; ./mku u2; ./mku u3; ./mku u4)
 
 arm-none-eabi-as -mcpu=arm926ej-s ts.s -o ts.o
-arm-none-eabi-gcc -c -mcpu=arm926ej-s t.c -o t.o
+arm-none-eabi-gcc -c -w -mcpu=arm926ej-s t.c -o t.o
 
 # arm-none-eabi-ld -T t.ld ts.o t.o kcload.o -Ttext=0x10000 -o t.elf
 arm-none-eabi-ld -T t.ld ts.o t.o -Ttext=0x10000 -o t.elf

@@ -56,6 +56,27 @@ int kgetPA()
   return running->pgdir[2048] & 0xFFFF0000;
 }
 
+int do_exit()
+{
+  if(running->pid == 1)
+  {
+    printf("p1 can never die\n");
+    return -1;
+  }
+  kexit(running->pid);  // exit with own PID value 
+}
+
+int do_fork(char * utype)
+{
+  if(strcmp(utype, "u1") == 0 || strcmp(utype, "u2") == 0 || strcmp(utype, "u3") == 0 || strcmp(utype, "u4") == 0)
+    kfork(utype);
+  else
+  {
+    kfork("u1");
+  }
+  
+}
+
 // called from svc_entry in ts.s
 int svc_handler(int a, int b, int c, int d)
 {
@@ -70,6 +91,8 @@ int svc_handler(int a, int b, int c, int d)
      case 5: r = wait(running, &status); break;
      case 6: r = ksleep(b);           break;
      case 7: r = kwakeup(b);          break;
+     case 8: r = do_exit();          break;
+     case 9: r = do_fork((char *)b); break;
      case 90: r = kgetc() & 0x7F;    break;
      case 91: r = kputc(b);          break;
      case 92: r = kgetPA();          break;

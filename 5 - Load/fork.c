@@ -58,6 +58,7 @@ PROC *kfork(char *filename)
       TJ
   */
   ptable[2048] = 0x800000 + (p->pid - 1)*0x100000|0xC32;
+  // ptable[2049] = 0x900000 + (p->pid - 1)*0x200000|0xC32;
 
   p->cpsr = (int *)0x10;    // previous mode was Umode
   

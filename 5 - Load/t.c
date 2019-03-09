@@ -133,9 +133,9 @@ int main()
    kernel_init();
   
    kfork("u1");
-   kfork("u2");
-   kfork("u3");
-   kfork("u4");
+  //  kfork("u2");
+  //  kfork("u3");
+  //  kfork("u4");
    printBody();
    unlock();
    color = WHITE;
