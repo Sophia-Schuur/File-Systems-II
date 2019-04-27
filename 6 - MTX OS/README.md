@@ -28,6 +28,8 @@ management algorithms. Mount the loop device and populate it with DIRs and files
 
 `wanix` is the base kernel used for basic syscall functions. 
 
+The Fresh Copy of `sdimage` contains no custom commands, only what is in the wanix. 
+
 ### Initialization: 
 After mounting the root file system, P0 creats P1, whose Umode image is 
   the /bin/init program. P1 will go Umode directly to execute /bin/init, 
@@ -40,17 +42,17 @@ P2 is a login process. It executes /bin/login on the console terminal
 /dev/tty0. So the special file /dev/tty0 MUST exist. To support serial 
 terminals and printer, /dev/ttyS0, /dev/ttyS1 and /dev/lp0 must also exist.
 
-In /bin/login, P2 opens its tty special file (/dev/tty0) as stdin(0), stdout(1) and stderr(2). It prompts the user to login
+1. In /bin/login, P2 opens its tty special file (/dev/tty0) as stdin(0), stdout(1) and stderr(2). It prompts the user to login
 and waits for him to do so. When a user tries to login, it reads the username and password (from its stdin) and opens 
 the /etc/passwd file to authenticate the user.
 
-If the user has a valid account in /etc/passwd, P2 becomes the user's process (by taking on the user's uid). 
-It chdir to user's HOME directory and execute the listed program, which is normally the sh (/bin/sh).
+2. If the user has a valid account in /etc/passwd, P2 becomes the user's process (by taking on the user's uid). 
+It chdir to user's HOME directory and executes the listed program, which is normally the sh (/bin/sh).
 Then (in sh) it loops forever until the user enters `logout`.
 
-When the child proc terminates (by exit() syscall to WANIX kernel), it wakes up sh, which prompts for another cmdLine, etc.
+3. When the child proc terminates (by exit() syscall to WANIX kernel), it wakes up sh, which prompts for another cmdLine, etc.
 
-When sh dies, it wakes up its parent, INIT, which forks another login process.
+4. When sh dies, it wakes up its parent, INIT, which forks another login process.
 
 ### Run:
 `wanix` supports dynamic process creation and termination. So, there are two methods to run this program.
@@ -60,6 +62,10 @@ by the user in the shell. Upon using a fresh sdimage, all custom commands will n
 
 ##### To run without adding or editing any commands:
 `sh run`
+
+##### Some logins:
+* Username: root | Password: 12345. Can access bin, dev, boot, etc, etc.. and has some ready to go files to mess with. Try `cat f`!
+* Username: kcw | Password: abcde. Nothing in here
 
 
 ### Known Bugs:
