@@ -67,6 +67,21 @@ by the user in the shell. Upon using a fresh sdimage, all custom commands will n
 * Username: root | Password: 12345. Can access bin, dev, boot, etc, etc.. and has some ready to go files to mess with. Try `cat f`!
 * Username: kcw | Password: abcde. Nothing in here
 
+##### My current custom commands: 
+###### Startup commands:
+* init
+* login
+* sh
+* Single and double piping (code in sh.c)
+* I/O redirects >, <, <<, >>
+
+###### User commands:
+* ls [filename]
+* cat [filename]
+* more [filename]
+* grep [pattern] [filename] 
+* l2u (convert lower to upper) [file1] [file2]
+* cp [source] [destination]
 
 ### Known Bugs:
 * Triple piping is broken. 
